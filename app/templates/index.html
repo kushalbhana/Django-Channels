@@ -18,7 +18,7 @@
     {{group_name|json_script:"group-name"}}
     <script> 
         const groupName= JSON.parse(document.getElementById('group-name').textContent)
-        console.log(groupName)
+        // console.log(groupName)
         var ws=  new WebSocket(
         'ws://'
         + window.location.host 
@@ -27,18 +27,18 @@
         + '/'
         )
         ws.onopen = function(){
-            console.log('Websocket Connected open...')
+            // console.log('Websocket Connected open...')
             ws.send('This is the message from client..')
         }
         ws.onmessage = function(event){
-            console.log('Message recieved from server...', event.data)
-            console.log('Type of Message recieved from server...', typeof(event.data))
+            // console.log('Message recieved from server...', event.data)
+            // console.log('Type of Message recieved from server...', typeof(event.data))
             const data= JSON.parse(event.data)
-            console.log('Parsed data...', data)
-            document.querySelector('#chat-log').value += (data.msg + '\n')
+            // console.log('Parsed data...', data)
+            document.querySelector('#chat-log').value += data.user + ': ' + (data.msg + '\n')
         }
         ws.onclose = function(event){
-            console.log('Message Connection closed unexpectedly...');
+            // console.log('Message Connection closed unexpectedly...');
         };
 
         document.getElementById('chat-message-submit').onclick = 
