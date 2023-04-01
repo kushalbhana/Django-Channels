@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat app</title>
+</head>
+<body>
+    <h2>Group name.. {{group_name}}</h2>
+    <textarea id="chat-log" cols="100" rows="20">
+        {% for chat in chats %}
+        {{chat.content}}
+        {% endfor  %}
+    </textarea><br>
+    <input type="text" id="chat-message-input" size="100"><br>
+    <input type="button" value="Send" id="chat-message-submit">
+    {{group_name|json_script:"group-name"}}
+    <script> 
+        const groupName= JSON.parse(document.getElementById('group-name').textContent)
+        console.log(groupName)
+        var ws=  new WebSocket(
+        'ws://'
+        + window.location.host 
+        + '/ws/sc/' 
+        + groupName 
+        + '/'
+        )
+        ws.onopen = function(){
+            console.log('Websocket Connected open...')
+            ws.send('This is the message from client..')
+        }
+        ws.onmessage = function(event){
+            console.log('Message recieved from server...', event.data)
+            console.log('Type of Message recieved from server...', typeof(event.data))
+            const data= JSON.parse(event.data)
+            console.log('Parsed data...', data)
+            document.querySelector('#chat-log').value += (data.msg + '\n')
+        }
+        ws.onclose = function(event){
+            console.log('Message Connection closed unexpectedly...');
+        };
+
+        document.getElementById('chat-message-submit').onclick = 
+        function(event){
+            const messageInputDom = document.getElementById
+            ('chat-message-input')
+            const message = messageInputDom.value
+            ws.send(JSON.stringify({
+                'msg': message 
+            }))
+            messageInputDom.value = ''
+        }
+    </script>
+    
+</body>
+</html>
